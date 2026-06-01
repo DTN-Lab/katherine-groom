@@ -1,0 +1,162 @@
+{
+  "services": [
+    {
+      "id": "bano-express",
+      "name": "Baño Express",
+      "description": "Baño completo con shampoo premium, secado profesional y desodorización. Ideal para mantención rápida.",
+      "coatTypes": ["short", "medium", "long", "curly"],
+      "prices": { "small": 3500, "medium": 5000, "large": 7500 },
+      "includes": ["Shampoo premium", "Secado profesional", "Desodorización", "Perfume de pelaje"],
+      "duration": 45,
+      "image": "https://images.unsplash.com/photo-1611173622933-91942d394b04?w=600&h=400&auto=format&fit=crop",
+      "level": "basic",
+      "active": true
+    },
+    {
+      "id": "bano-cepillado",
+      "name": "Baño + Cepillado",
+      "description": "Baño completo más cepillado antipelo muerto para un pelaje brilloso y libre de nudos.",
+      "coatTypes": ["short", "medium", "long", "curly"],
+      "prices": { "small": 5000, "medium": 7000, "large": 10000 },
+      "includes": ["Shampoo premium", "Secado profesional", "Cepillado antipelo muerto", "Brillo de pelaje"],
+      "duration": 60,
+      "image": "https://images.unsplash.com/photo-1597595735781-6a57fb8e3e3d?w=600&h=400&auto=format&fit=crop",
+      "level": "basic",
+      "active": true
+    },
+    {
+      "id": "grooming-basico",
+      "name": "Grooming Básico",
+      "description": "Servicio completo de higiene: baño, cepillado, limpieza de oídos, corte de uñas y arreglo de patas.",
+      "coatTypes": ["medium", "long", "curly"],
+      "prices": { "small": 7000, "medium": 10000, "large": 14000 },
+      "includes": ["Todo del Baño + Cepillado", "Limpieza de oídos", "Corte de uñas", "Arreglo de patas y almohadillas"],
+      "duration": 90,
+      "image": "https://images.unsplash.com/photo-1581887936036-3f4f7f0b6679?w=600&h=400&auto=format&fit=crop",
+      "level": "intermediate",
+      "active": true
+    },
+    {
+      "id": "grooming-completo",
+      "name": "Grooming Completo",
+      "description": "El servicio más completo: grooming básico más corte personalizado según la raza y gusto del dueño.",
+      "coatTypes": ["long", "curly"],
+      "prices": { "small": 10000, "medium": 14000, "large": 18000 },
+      "includes": ["Todo del Grooming Básico", "Corte personalizado", "Estilizado final", "Parfum de pelaje"],
+      "duration": 120,
+      "image": "https://images.unsplash.com/photo-1597603413826-cd1c06b05222?w=600&h=400&auto=format&fit=crop",
+      "level": "premium",
+      "active": true
+    },
+    {
+      "id": "tinturacion",
+      "name": "Tinturación",
+      "description": "Coloración con tintes 100% seguros para mascotas en orejitas, patas, cola u otras zonas a elección.",
+      "coatTypes": ["long", "curly"],
+      "prices": { "small": 8000, "medium": 10000, "large": 12000 },
+      "includes": ["Tinte 100% seguro para mascotas", "Zona a elección", "Fijado y acabado"],
+      "duration": 60,
+      "image": "https://images.unsplash.com/photo-1629030502047-b6ac6d4a78b6?w=600&h=400&auto=format&fit=crop",
+      "level": "premium",
+      "active": true
+    }
+  ],
+  "breeds": [
+    {
+      "id": "poodle",
+      "name": "Poodle",
+      "slug": "poodle",
+      "description": "El Poodle es una de las razas más versátiles en cuanto a estilismo. Su pelaje de lana permite todo tipo de cortes, desde los más simples hasta elaborados diseños de concurso.",
+      "image": "https://images.unsplash.com/photo-1583987303344-1f553edc7f11?w=800&h=500&auto=format&fit=crop",
+      "coatType": "curly",
+      "cuts": [
+        {
+          "id": "simple",
+          "name": "Corte Simple",
+          "description": "Corte uniforme con máquina, prolijo y fácil de mantener. Ideal para el día a día y el calor. El pelaje queda parejo en todo el cuerpo.",
+          "prices": { "small": 12000, "medium": 16000, "large": 22000 },
+          "image": "https://images.unsplash.com/photo-1513189643435-49f97650b367?w=600&h=500&auto=format&fit=crop",
+          "tools": "machine",
+          "duration": 60,
+          "level": "basic"
+        },
+        {
+          "id": "peluche",
+          "name": "Corte Peluche",
+          "description": "Corte redondeado que le da apariencia de osito de peluche. Cara esponjosa, patas uniformes, cola esponjosa. El favorito de las familias.",
+          "prices": { "small": 16000, "medium": 22000, "large": 30000 },
+          "image": "https://images.unsplash.com/photo-1625277743460-43716b93507a?w=600&h=500&auto=format&fit=crop",
+          "tools": "both",
+          "duration": 90,
+          "level": "intermediate"
+        },
+        {
+          "id": "asiatico",
+          "name": "Corte Asiático",
+          "description": "Estilo oriental con patas largas y bien redondeadas, cara perfectamente circular y acabado impecable. El más elaborado y elegante.",
+          "prices": { "small": 22000, "medium": 30000, "large": 42000 },
+          "image": "https://images.unsplash.com/photo-1519224939581-4fbbdbeff92f?w=600&h=500&auto=format&fit=crop",
+          "tools": "scissors",
+          "duration": 120,
+          "level": "premium"
+        }
+      ],
+      "extras": [
+        {
+          "id": "motas",
+          "name": "+ Motas",
+          "description": "Pompones decorativos en orejas, patas y/o cola. Requiere técnica especial y tiempo adicional.",
+          "prices": { "small": 5000, "medium": 7000, "large": 10000 }
+        }
+      ]
+    },
+    {
+      "id": "bichon-frise",
+      "name": "Bichón Frisé",
+      "slug": "bichon-frise",
+      "description": "El Bichón Frisé es conocido por su pelaje blanco rizado y su cara redonda y expresiva. Sus cortes buscan resaltar esa apariencia esponjosa y adorable que lo caracteriza.",
+      "image": "https://images.unsplash.com/photo-1587539975099-5aecb74902d4?w=800&h=500&auto=format&fit=crop",
+      "coatType": "curly",
+      "cuts": [
+        {
+          "id": "simple",
+          "name": "Corte Simple",
+          "description": "Corte parejo con máquina que mantiene el pelaje corto y limpio, resaltando la forma natural del Bichón sin mucho trabajo de tijera.",
+          "prices": { "small": 10000, "medium": 13000, "large": 18000 },
+          "image": "https://images.unsplash.com/photo-1554634242-a653caa56834?w=600&h=500&auto=format&fit=crop",
+          "tools": "machine",
+          "duration": 60,
+          "level": "basic"
+        },
+        {
+          "id": "peluche",
+          "name": "Corte Peluche",
+          "description": "El clásico del Bichón: pelaje esponjoso y redondeado que resalta su cara adorable. Cuerpo uniforme y cabeza circular perfecta.",
+          "prices": { "small": 14000, "medium": 18000, "large": 24000 },
+          "image": "https://images.unsplash.com/photo-1695018778428-a54326ad9a27?w=600&h=500&auto=format&fit=crop",
+          "tools": "both",
+          "duration": 90,
+          "level": "intermediate"
+        },
+        {
+          "id": "asiatico",
+          "name": "Corte Asiático",
+          "description": "Versión del corte asiático adaptada para el Bichón: cara perfectamente circular, patas redondeadas y acabado de lujo.",
+          "prices": { "small": 18000, "medium": 24000, "large": 32000 },
+          "image": "https://images.unsplash.com/photo-1652900186700-1266fdafd5a7?w=600&h=500&auto=format&fit=crop",
+          "tools": "scissors",
+          "duration": 120,
+          "level": "premium"
+        }
+      ],
+      "extras": [
+        {
+          "id": "motas",
+          "name": "+ Motas",
+          "description": "Pompones decorativos adaptados al estilo del Bichón Frisé.",
+          "prices": { "small": 4000, "medium": 5500, "large": 7000 }
+        }
+      ]
+    }
+  ]
+}
