@@ -35,7 +35,7 @@ export default async function HomePage() {
             <Button render={<Link href="/servicios" />} nativeButton={false} size="lg" className="bg-white text-brand-lila hover:bg-white/90 font-semibold shadow-lg">
               Ver todos los servicios
             </Button>
-            <Button render={<Link href="/razas/poodle" />} nativeButton={false} size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+            <Button render={<Link href="/razas/poodle" />} nativeButton={false} size="lg" variant="outline" className="border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white">
               Cortes especiales
             </Button>
           </div>
