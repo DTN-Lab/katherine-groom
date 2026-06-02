@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { PawPrint, Save, Lock, Plus, Eye, EyeOff, ImageIcon, AlertCircle } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { PawPrint, Save, Lock, Plus, Eye, EyeOff, ImageIcon, AlertCircle, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +22,7 @@ function unsplashFormat(id: string, w: number, h: number) {
   return `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&auto=format&fit=crop`;
 }
 
-/* ─── Componente de campo de imagen con preview ──────────────────────────────── */
+/* ─── Componente de campo de imagen con preview + subida ─────────────────────── */
 function ImageInput({
   value,
   onChange,
@@ -34,11 +34,40 @@ function ImageInput({
 }) {
   const hint = IMAGE_HINTS[type];
   const [imgError, setImgError] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const fileRef = useRef<HTMLInputElement>(null);
 
-  // Resetear error cuando cambia la URL
-  function handleChange(url: string) {
+  function handleUrlChange(url: string) {
     setImgError(false);
+    setUploadError('');
     onChange(url);
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError('');
+
+    try {
+      const body = new FormData();
+      body.append('file', file);
+
+      const res = await fetch('/api/upload', { method: 'POST', body });
+      const json = await res.json();
+
+      if (!res.ok) throw new Error(json.error ?? 'Error al subir');
+
+      setImgError(false);
+      onChange(json.url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Error al subir la imagen');
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
   }
 
   return (
@@ -50,7 +79,12 @@ function ImageInput({
 
       <div className="flex gap-3 items-start">
         {/* Preview thumbnail */}
-        <div className="shrink-0 w-20 h-14 rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center">
+        <div className="shrink-0 w-20 h-14 rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center relative">
+          {uploading && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
           {value && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -64,21 +98,44 @@ function ImageInput({
           )}
         </div>
 
-        {/* URL input */}
+        {/* URL input + upload */}
         <div className="flex-1 space-y-1.5">
           <Input
             value={value}
-            onChange={(e) => handleChange(e.target.value)}
+            onChange={(e) => handleUrlChange(e.target.value)}
             placeholder="https://images.unsplash.com/photo-..."
             className={imgError ? 'border-destructive' : ''}
           />
-          {imgError && (
-            <p className="text-xs text-destructive flex items-center gap-1">
-              <AlertCircle className="h-3 w-3" /> URL inválida o imagen no accesible
-            </p>
-          )}
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Botón subir */}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="inline-flex items-center gap-1.5 text-xs text-brand-lila border border-brand-lila/30 rounded-md px-2.5 py-1 hover:bg-brand-lila/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Upload className="h-3 w-3" />
+              {uploading ? 'Subiendo…' : 'Subir desde computador'}
+            </button>
+
+            {(imgError || uploadError) && (
+              <p className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {uploadError || 'URL inválida o no accesible'}
+              </p>
+            )}
+          </div>
+
           <p className="text-[11px] text-muted-foreground leading-relaxed">
-            Formato Unsplash:{' '}
+            O pegá una URL de Unsplash:{' '}
             <code className="bg-muted px-1 rounded text-[10px]">
               {unsplashFormat('PHOTO_ID', hint.w, hint.h)}
             </code>
@@ -410,14 +467,17 @@ export default function AdminPage() {
       </section>
 
       {/* Nota */}
-      <div className="mt-6 p-4 bg-muted rounded-xl text-xs text-muted-foreground space-y-1">
+      <div className="mt-6 p-4 bg-muted rounded-xl text-xs text-muted-foreground space-y-1.5">
         <p>
           <strong>Guardar:</strong> escribe el archivo <code>data/catalog.json</code> en el servidor local.
           Para publicar en producción, hacé commit y redesplegá.
         </p>
         <p>
-          <strong>Imágenes:</strong> usá URLs de Unsplash (<code>images.unsplash.com</code>).
-          Podés encontrar el ID de una foto en la URL de la página de Unsplash y armar la URL con el formato indicado en cada campo.
+          <strong>Subir imagen:</strong> las imágenes se almacenan en <strong>Vercel Blob</strong>.
+          Requiere activar el almacenamiento en el Dashboard de Vercel → tu proyecto → pestaña <em>Storage</em> → <em>Blob</em>.
+        </p>
+        <p>
+          <strong>URL manual:</strong> también podés pegar directamente una URL de Unsplash usando el formato indicado en cada campo.
         </p>
       </div>
     </div>

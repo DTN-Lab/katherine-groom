@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'fastly.picsum.photos' },
       { protocol: 'https', hostname: 'picsum.photos' },
+      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
     ],
   },
 };
