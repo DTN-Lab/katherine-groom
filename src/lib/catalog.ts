@@ -50,5 +50,5 @@ export async function saveCatalog(data: CatalogData): Promise<void> {
 
   // Invalida la caché para que el próximo request lea los datos nuevos
   const { revalidateTag } = await import('next/cache');
-  revalidateTag(CACHE_TAG);
+  revalidateTag(CACHE_TAG, 'default');
 }
