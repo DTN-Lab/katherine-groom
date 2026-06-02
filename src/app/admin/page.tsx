@@ -18,11 +18,8 @@ const IMAGE_HINTS: Record<string, { label: string; w: number; h: number }> = {
   cut:        { label: 'Corte',         w: 600, h: 500 },
 };
 
-function unsplashFormat(id: string, w: number, h: number) {
-  return `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&auto=format&fit=crop`;
-}
 
-/* ─── Componente de campo de imagen con preview + subida ─────────────────────── */
+/* ─── Componente de imagen: solo upload, sin URL editable ────────────────────── */
 function ImageInput({
   value,
   onChange,
@@ -37,12 +34,6 @@ function ImageInput({
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
-
-  function handleUrlChange(url: string) {
-    setImgError(false);
-    setUploadError('');
-    onChange(url);
-  }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -72,17 +63,17 @@ function ImageInput({
 
   return (
     <div className="space-y-2">
-      <Label className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5">
+      <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
         <ImageIcon className="h-3.5 w-3.5" />
-        Imagen — {hint.label} ({hint.w}×{hint.h}px)
+        Imagen — {hint.label} ({hint.w}×{hint.h}px recomendado)
       </Label>
 
-      <div className="flex gap-3 items-start">
-        {/* Preview thumbnail */}
-        <div className="shrink-0 w-20 h-14 rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center relative">
+      <div className="flex gap-3 items-center">
+        {/* Thumbnail */}
+        <div className="shrink-0 w-24 h-16 rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center relative">
           {uploading && (
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             </div>
           )}
           {value && !imgError ? (
@@ -94,52 +85,40 @@ function ImageInput({
               onError={() => setImgError(true)}
             />
           ) : (
-            <ImageIcon className="h-6 w-6 text-muted-foreground/40" />
+            <ImageIcon className="h-7 w-7 text-muted-foreground/30" />
           )}
         </div>
 
-        {/* URL input + upload */}
+        {/* Botón + error */}
         <div className="flex-1 space-y-1.5">
-          <Input
-            value={value}
-            onChange={(e) => handleUrlChange(e.target.value)}
-            placeholder="https://images.unsplash.com/photo-..."
-            className={imgError ? 'border-destructive' : ''}
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="hidden"
+            onChange={handleFileChange}
           />
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            className="inline-flex items-center gap-2 text-sm font-medium text-brand-lila border border-brand-lila/40 rounded-lg px-3 py-2 hover:bg-brand-lila/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <Upload className="h-4 w-4" />
+            {uploading ? 'Subiendo…' : value ? 'Cambiar imagen' : 'Subir imagen'}
+          </button>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Botón subir */}
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-              className="inline-flex items-center gap-1.5 text-xs text-brand-lila border border-brand-lila/30 rounded-md px-2.5 py-1 hover:bg-brand-lila/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <Upload className="h-3 w-3" />
-              {uploading ? 'Subiendo…' : 'Subir desde computador'}
-            </button>
-
-            {(imgError || uploadError) && (
-              <p className="text-xs text-destructive flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                {uploadError || 'URL inválida o no accesible'}
-              </p>
-            )}
-          </div>
-
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
-            O pegá una URL de Unsplash:{' '}
-            <code className="bg-muted px-1 rounded text-[10px]">
-              {unsplashFormat('PHOTO_ID', hint.w, hint.h)}
-            </code>
-          </p>
+          {uploadError && (
+            <p className="text-xs text-destructive flex items-center gap-1">
+              <AlertCircle className="h-3 w-3" /> {uploadError}
+            </p>
+          )}
+          {imgError && !uploadError && (
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <AlertCircle className="h-3 w-3" /> La imagen actual no se puede previsualizar
+            </p>
+          )}
+          <p className="text-[11px] text-muted-foreground">JPG, PNG o WebP · máx. 5 MB</p>
         </div>
       </div>
     </div>
