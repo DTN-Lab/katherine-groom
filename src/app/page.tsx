@@ -44,12 +44,12 @@ export default async function HomePage() {
 
       {/* Servicios destacados */}
       <section className="max-w-6xl mx-auto px-4 py-16">
-        <div className="flex items-end justify-between mb-8">
+        <div className="flex items-end justify-between mb-8 gap-4">
           <div>
             <p className="text-brand-lila text-sm font-semibold uppercase tracking-widest mb-1">Lo que ofrecemos</p>
             <h2 className="text-3xl font-bold text-foreground">Nuestros Servicios</h2>
           </div>
-          <Link href="/servicios" className="flex items-center gap-1 text-sm text-brand-lila font-medium hover:gap-2 transition-all">
+          <Link href="/servicios" className="flex items-center gap-1 text-sm text-brand-lila font-medium hover:gap-2 transition-all whitespace-nowrap shrink-0">
             Ver todos <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
