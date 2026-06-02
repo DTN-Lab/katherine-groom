@@ -16,9 +16,9 @@ const LEVEL_LABELS: Record<Cut['level'], string> = {
 };
 
 const LEVEL_BADGE: Record<Cut['level'], string> = {
-  basic: 'bg-secondary text-secondary-foreground border-border',
-  intermediate: 'bg-brand-turquoise/20 text-accent-foreground border-brand-turquoise/40',
-  premium: 'bg-brand-lila/15 text-primary border-brand-lila/30',
+  basic:        'bg-secondary text-secondary-foreground border-transparent',
+  intermediate: 'bg-brand-turquoise text-white border-transparent',
+  premium:      'bg-brand-lila text-white border-transparent',
 };
 
 const TOOL_LABELS: Record<Cut['tools'], string> = {

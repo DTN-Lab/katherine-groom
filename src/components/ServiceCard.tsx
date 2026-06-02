@@ -11,9 +11,9 @@ const LEVEL_LABELS: Record<Service['level'], string> = {
 };
 
 const LEVEL_COLORS: Record<Service['level'], string> = {
-  basic: 'bg-secondary text-secondary-foreground',
-  intermediate: 'bg-brand-turquoise/20 text-accent-foreground border-brand-turquoise/30',
-  premium: 'bg-brand-lila/15 text-primary border-brand-lila/30',
+  basic:        'bg-secondary text-secondary-foreground border-transparent',
+  intermediate: 'bg-brand-turquoise text-white border-transparent',
+  premium:      'bg-brand-lila text-white border-transparent',
 };
 
 const SIZE_LABELS = { small: 'Pequeño', medium: 'Mediano', large: 'Grande' };
