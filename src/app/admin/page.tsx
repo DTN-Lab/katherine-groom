@@ -448,15 +448,11 @@ export default function AdminPage() {
       {/* Nota */}
       <div className="mt-6 p-4 bg-muted rounded-xl text-xs text-muted-foreground space-y-1.5">
         <p>
-          <strong>Guardar:</strong> escribe el archivo <code>data/catalog.json</code> en el servidor local.
-          Para publicar en producción, hacé commit y redesplegá.
+          <strong>Guardar cambios:</strong> guarda el catálogo directamente en <strong>Vercel Blob</strong>.
+          Los cambios se ven reflejados en el sitio de inmediato, sin necesidad de redesplegar.
         </p>
         <p>
-          <strong>Subir imagen:</strong> las imágenes se almacenan en <strong>Vercel Blob</strong>.
-          Requiere activar el almacenamiento en el Dashboard de Vercel → tu proyecto → pestaña <em>Storage</em> → <em>Blob</em>.
-        </p>
-        <p>
-          <strong>URL manual:</strong> también podés pegar directamente una URL de Unsplash usando el formato indicado en cada campo.
+          <strong>Imágenes:</strong> al subir una foto se almacena en Vercel Blob y la URL se actualiza automáticamente en el catálogo al guardar.
         </p>
       </div>
     </div>
