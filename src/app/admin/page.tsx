@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { PawPrint, Save, Lock, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
+import { PawPrint, Save, Lock, Plus, Eye, EyeOff, ImageIcon, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,6 +11,85 @@ import type { CatalogData, Service } from '@/lib/types';
 
 const ADMIN_PASSWORD = 'katherine2024';
 
+/* ─── Dimensiones recomendadas por tipo ─────────────────────────────────────── */
+const IMAGE_HINTS: Record<string, { label: string; w: number; h: number }> = {
+  service:    { label: 'Servicio',      w: 600, h: 400 },
+  breedHero:  { label: 'Raza (portada)', w: 800, h: 500 },
+  cut:        { label: 'Corte',         w: 600, h: 500 },
+};
+
+function unsplashFormat(id: string, w: number, h: number) {
+  return `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&auto=format&fit=crop`;
+}
+
+/* ─── Componente de campo de imagen con preview ──────────────────────────────── */
+function ImageInput({
+  value,
+  onChange,
+  type,
+}: {
+  value: string;
+  onChange: (url: string) => void;
+  type: keyof typeof IMAGE_HINTS;
+}) {
+  const hint = IMAGE_HINTS[type];
+  const [imgError, setImgError] = useState(false);
+
+  // Resetear error cuando cambia la URL
+  function handleChange(url: string) {
+    setImgError(false);
+    onChange(url);
+  }
+
+  return (
+    <div className="space-y-2">
+      <Label className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5">
+        <ImageIcon className="h-3.5 w-3.5" />
+        Imagen — {hint.label} ({hint.w}×{hint.h}px)
+      </Label>
+
+      <div className="flex gap-3 items-start">
+        {/* Preview thumbnail */}
+        <div className="shrink-0 w-20 h-14 rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center">
+          {value && !imgError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={value}
+              alt="preview"
+              className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <ImageIcon className="h-6 w-6 text-muted-foreground/40" />
+          )}
+        </div>
+
+        {/* URL input */}
+        <div className="flex-1 space-y-1.5">
+          <Input
+            value={value}
+            onChange={(e) => handleChange(e.target.value)}
+            placeholder="https://images.unsplash.com/photo-..."
+            className={imgError ? 'border-destructive' : ''}
+          />
+          {imgError && (
+            <p className="text-xs text-destructive flex items-center gap-1">
+              <AlertCircle className="h-3 w-3" /> URL inválida o imagen no accesible
+            </p>
+          )}
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            Formato Unsplash:{' '}
+            <code className="bg-muted px-1 rounded text-[10px]">
+              {unsplashFormat('PHOTO_ID', hint.w, hint.h)}
+            </code>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Inputs de precio ───────────────────────────────────────────────────────── */
 function PriceInputs({
   prices,
   onChange,
@@ -37,6 +116,7 @@ function PriceInputs({
   );
 }
 
+/* ─── Página principal ───────────────────────────────────────────────────────── */
 export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
@@ -84,11 +164,7 @@ export default function AdminPage() {
     }
   }
 
-  function updateServiceField<K extends keyof Service>(
-    id: string,
-    field: K,
-    value: Service[K],
-  ) {
+  function updateServiceField<K extends keyof Service>(id: string, field: K, value: Service[K]) {
     setCatalog((prev) => {
       if (!prev) return prev;
       return {
@@ -98,6 +174,53 @@ export default function AdminPage() {
     });
   }
 
+  function updateBreedImage(breedId: string, image: string) {
+    setCatalog((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        breeds: prev.breeds.map((b) => (b.id === breedId ? { ...b, image } : b)),
+      };
+    });
+  }
+
+  function updateCutImage(breedId: string, cutIdx: number, image: string) {
+    setCatalog((prev) => {
+      if (!prev) return prev;
+      const breeds = prev.breeds.map((b) => {
+        if (b.id !== breedId) return b;
+        const cuts = b.cuts.map((c, i) => (i === cutIdx ? { ...c, image } : c));
+        return { ...b, cuts };
+      });
+      return { ...prev, breeds };
+    });
+  }
+
+  function updateCutPrices(breedId: string, cutIdx: number, prices: Service['prices']) {
+    setCatalog((prev) => {
+      if (!prev) return prev;
+      const breeds = prev.breeds.map((b) => {
+        if (b.id !== breedId) return b;
+        const cuts = b.cuts.map((c, i) => (i === cutIdx ? { ...c, prices } : c));
+        return { ...b, cuts };
+      });
+      return { ...prev, breeds };
+    });
+  }
+
+  function updateExtraPrices(breedId: string, extraIdx: number, prices: Service['prices']) {
+    setCatalog((prev) => {
+      if (!prev) return prev;
+      const breeds = prev.breeds.map((b) => {
+        if (b.id !== breedId) return b;
+        const extras = b.extras.map((e, i) => (i === extraIdx ? { ...e, prices } : e));
+        return { ...b, extras };
+      });
+      return { ...prev, breeds };
+    });
+  }
+
+  /* ─── Login ─────────────────────────────────────────────────────────────────── */
   if (!authenticated) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4">
@@ -150,28 +273,26 @@ export default function AdminPage() {
     );
   }
 
+  /* ─── Panel ──────────────────────────────────────────────────────────────────── */
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <div className="flex items-center justify-between mb-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Panel de Administración</h1>
-          <p className="text-sm text-muted-foreground mt-1">Editá precios y servicios del catálogo</p>
+          <p className="text-sm text-muted-foreground mt-1">Editá precios, descripciones e imágenes del catálogo</p>
         </div>
         <div className="flex items-center gap-3">
           {saved && <p className="text-sm text-green-600 font-medium">✓ Guardado</p>}
           {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button
-            onClick={save}
-            disabled={saving}
-            className="bg-brand-lila hover:bg-brand-lila-dark text-white"
-          >
+          <Button onClick={save} disabled={saving} className="bg-brand-lila hover:bg-brand-lila-dark text-white">
             <Save className="h-4 w-4 mr-2" />
             {saving ? 'Guardando...' : 'Guardar cambios'}
           </Button>
         </div>
       </div>
 
-      {/* Servicios */}
+      {/* ── Servicios ─────────────────────────────────────────────────────────── */}
       <section className="mb-10">
         <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
           <PawPrint className="h-5 w-5 text-brand-lila" /> Servicios
@@ -179,7 +300,8 @@ export default function AdminPage() {
         <div className="space-y-4">
           {catalog.services.map((service) => (
             <Card key={service.id} className={service.active ? '' : 'opacity-60'}>
-              <CardContent className="p-4 space-y-3">
+              <CardContent className="p-4 space-y-4">
+                {/* Nombre + toggle */}
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-semibold text-foreground">{service.name}</p>
@@ -197,6 +319,7 @@ export default function AdminPage() {
                   </div>
                 </div>
 
+                {/* Descripción */}
                 <div>
                   <Label className="text-xs text-muted-foreground mb-1 block">Descripción</Label>
                   <Input
@@ -205,6 +328,14 @@ export default function AdminPage() {
                   />
                 </div>
 
+                {/* Imagen */}
+                <ImageInput
+                  value={service.image}
+                  onChange={(url) => updateServiceField(service.id, 'image', url)}
+                  type="service"
+                />
+
+                {/* Precios */}
                 <div>
                   <Label className="text-xs text-muted-foreground mb-1 block">Precios (CLP)</Label>
                   <PriceInputs
@@ -218,55 +349,57 @@ export default function AdminPage() {
         </div>
       </section>
 
-      {/* Precios por raza */}
+      {/* ── Cortes por raza ───────────────────────────────────────────────────── */}
       <section>
         <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Plus className="h-5 w-5 text-brand-lila" /> Precios de Cortes por Raza
+          <Plus className="h-5 w-5 text-brand-lila" /> Cortes por Raza
         </h2>
         {catalog.breeds.map((breed) => (
-          <div key={breed.id} className="mb-6">
-            <h3 className="font-medium text-foreground mb-3 flex items-center gap-2">
-              🐩 {breed.name}
-            </h3>
-            <div className="space-y-3">
+          <div key={breed.id} className="mb-8">
+            {/* Imagen portada de raza */}
+            <Card className="mb-3">
+              <CardContent className="p-4 space-y-3">
+                <p className="font-semibold text-foreground flex items-center gap-2">
+                  🐩 {breed.name} — Imagen de portada
+                </p>
+                <ImageInput
+                  value={breed.image}
+                  onChange={(url) => updateBreedImage(breed.id, url)}
+                  type="breedHero"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Cortes */}
+            <div className="space-y-3 pl-2">
               {breed.cuts.map((cut, ci) => (
                 <Card key={cut.id}>
-                  <CardContent className="p-4 space-y-2">
+                  <CardContent className="p-4 space-y-3">
                     <p className="font-medium text-sm text-foreground">{cut.name}</p>
-                    <PriceInputs
-                      prices={cut.prices}
-                      onChange={(prices) => {
-                        setCatalog((prev) => {
-                          if (!prev) return prev;
-                          const breeds = [...prev.breeds];
-                          const breedIdx = breeds.findIndex((b) => b.id === breed.id);
-                          const cuts = [...breeds[breedIdx].cuts];
-                          cuts[ci] = { ...cuts[ci], prices };
-                          breeds[breedIdx] = { ...breeds[breedIdx], cuts };
-                          return { ...prev, breeds };
-                        });
-                      }}
+                    <ImageInput
+                      value={cut.image}
+                      onChange={(url) => updateCutImage(breed.id, ci, url)}
+                      type="cut"
                     />
+                    <div>
+                      <Label className="text-xs text-muted-foreground mb-1 block">Precios (CLP)</Label>
+                      <PriceInputs
+                        prices={cut.prices}
+                        onChange={(prices) => updateCutPrices(breed.id, ci, prices)}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               ))}
+
+              {/* Extras */}
               {breed.extras.map((extra, ei) => (
                 <Card key={extra.id} className="border-brand-turquoise/30">
                   <CardContent className="p-4 space-y-2">
                     <p className="font-medium text-sm text-foreground">{extra.name} (Extra)</p>
                     <PriceInputs
                       prices={extra.prices}
-                      onChange={(prices) => {
-                        setCatalog((prev) => {
-                          if (!prev) return prev;
-                          const breeds = [...prev.breeds];
-                          const breedIdx = breeds.findIndex((b) => b.id === breed.id);
-                          const extras = [...breeds[breedIdx].extras];
-                          extras[ei] = { ...extras[ei], prices };
-                          breeds[breedIdx] = { ...breeds[breedIdx], extras };
-                          return { ...prev, breeds };
-                        });
-                      }}
+                      onChange={(prices) => updateExtraPrices(breed.id, ei, prices)}
                     />
                   </CardContent>
                 </Card>
@@ -276,9 +409,16 @@ export default function AdminPage() {
         ))}
       </section>
 
-      <div className="mt-6 p-4 bg-muted rounded-xl text-xs text-muted-foreground">
-        <strong>Nota:</strong> El botón "Guardar cambios" escribe el archivo <code>data/catalog.json</code> del servidor local.
-        Para publicar los cambios en producción, hacé commit y redesplegá.
+      {/* Nota */}
+      <div className="mt-6 p-4 bg-muted rounded-xl text-xs text-muted-foreground space-y-1">
+        <p>
+          <strong>Guardar:</strong> escribe el archivo <code>data/catalog.json</code> en el servidor local.
+          Para publicar en producción, hacé commit y redesplegá.
+        </p>
+        <p>
+          <strong>Imágenes:</strong> usá URLs de Unsplash (<code>images.unsplash.com</code>).
+          Podés encontrar el ID de una foto en la URL de la página de Unsplash y armar la URL con el formato indicado en cada campo.
+        </p>
       </div>
     </div>
   );
